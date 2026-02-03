@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Customer Service Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input[type="text"] { width: 400px; padding: 8px; }
+        button { padding: 8px 12px; }
+        .reply { margin-top: 20px; background-color: #f0f0f0; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>AI Customer Service Bot</h1>
+    <form method="POST">
+        <label for="question">Ask a question:</label><br>
+        <input type="text" id="question" name="question" required>
+        <button type="submit">Send</button>
+    </form>
+
+    {% if reply %}
+    <div class="reply">
+        <strong>Bot Reply:</strong>
+        <p>{{ reply }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
