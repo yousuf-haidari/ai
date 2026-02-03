@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-# Load API key from environment variable (NOT from code)
+# Initialize OpenAI client using environment variable
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Load business info once
@@ -36,13 +36,9 @@ Customer Question:
             try:
                 response = client.chat.completions.create(
                     model="gpt-4o-mini",
-                    messages=[
-                        {"role": "user", "content": prompt}
-                    ]
+                    messages=[{"role": "user", "content": prompt}]
                 )
-
                 reply = response.choices[0].message.content.strip()
-
             except Exception as e:
                 reply = f"Error contacting AI service: {e}"
 
@@ -50,3 +46,4 @@ Customer Question:
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
+
