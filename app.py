@@ -1,11 +1,16 @@
 from flask import Flask, render_template, request
-from openai import OpenAI
+from huggingface_hub import InferenceApi
 import os
 
 app = Flask(__name__)
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Initialize Hugging Face Inference client using environment variable
+HF_TOKEN = os.getenv("HUGGINGFACE_API_KEY")
+if not HF_TOKEN:
+    raise ValueError("HUGGINGFACE_API_KEY environment variable not set.")
+
+# Replace "gpt2" with your model of choice
+client = InferenceApi(repo_id="gpt2", token=HF_TOKEN)
 
 # Load business info
 try:
@@ -34,16 +39,24 @@ Customer Question:
 {user_question}
 """
             try:
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                reply = response.choices[0].message.content.strip()
+                # Hugging Face API call
+                response = client(inputs=prompt)
+                
+                # Different models return different structures
+                # For text generation models:
+                if isinstance(response, list):
+                    # e.g., [{"generated_text": "..."}]
+                    reply = response[0].get("generated_text", "").strip()
+                elif isinstance(response, dict):
+                    # Sometimes directly a dict with 'generated_text'
+                    reply = response.get("generated_text", "").strip()
+                else:
+                    reply = str(response)
+
             except Exception as e:
                 reply = f"Error contacting AI service: {e}"
 
     return render_template("index.html", reply=reply)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(debug=False, host="0.0.0.0", port=port)
+    app.run(debug=True)
