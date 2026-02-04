@@ -4,10 +4,10 @@ import os
 
 app = Flask(__name__)
 
-# Initialize OpenAI client using environment variable
+# Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Load business info once
+# Load business info
 try:
     with open("FAQ.txt", "r", encoding="utf-8") as f:
         business_info = f.read().strip()
@@ -45,5 +45,5 @@ Customer Question:
     return render_template("index.html", reply=reply)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
-
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
